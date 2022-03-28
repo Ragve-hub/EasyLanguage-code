@@ -1,0 +1,35 @@
+[LegacyColorValue = TRUE];
+
+{ ============================================================
+
+Function:  JR.CCX 21/12/2006
+
+Purpose:   similar to classic CCI except that the input series 
+           is first smoothed by JMA
+
+Note:      Input parameter LENGTH should be greater than 8.0
+
+Note:      Lookback will be 3 TIMES the size of LENGTH
+
+============================================================}
+
+inputs : Price(NUMERICSERIES), priceJMA(NUMERICSERIES), length(numeric);
+vars : diff(0), available.bark(0), MD(0), k(0), maxDepth(ceiling(2*length));
+
+{diff = JR.JMA.2k.fr( price, 4, 0 ) - JR.JMA.2k.fr( price, length, 0 ) ;}
+diff = Price - JR.AMA.2K( priceJMA, length) ;
+available.bark = iff( currentbar < maxDepth, currentbar, maxDepth ) ;
+
+MD = 0; 
+for k = 0 to available.bark-1 begin
+	MD = MD + absvalue ( diff[k] ) ;
+	end ;
+
+MD = iff(available.bark <>0, MD * 0.015 / available.bark,0) ;
+JR.CCX= iff ( MD > 0.000001, diff / MD, 0 ) ;
+
+
+
+
+
+
