@@ -1,0 +1,34 @@
+[LegacyColorValue = TRUE];
+
+{ *******************************************************************
+
+	Function:   J.FastD.2k
+
+   Analogous to Omega Research FastD stochastic, except
+   price data is presmoothed using Jurik Research's JMA filter.
+
+   Length = length of data window
+   Smooth = amount of JMA smoothness applied to H,L,C values
+
+   Notes: Requires Jurik's JMA to be already installed.
+          JMA is a commercial product, requiring a valid user license. 
+		  For details, see www.jurikres.com
+
+	Copyright 2001 Jurik Research          
+
+********************************************************************}
+
+input : Length(NumericSimple), Smooth(NumericSimple);
+vars: output(0);
+
+value1 = J.FastK.2k(Length,Smooth);
+
+if CurrentBar <= 1
+then output = value1 
+else output = (output+value1) / 2 ;
+
+J.FastD.2k = output ;
+
+
+
+  
