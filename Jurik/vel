@@ -1,0 +1,50 @@
+[LegacyColorValue = TRUE];
+
+{JRC_VEL_sclr_aux3; kod MikeS}
+Inputs: Input1(numericsimple), Input2(numericsimple);
+
+Vars: JRC01(30), JRC02(0.0001), JRC03(0), JRC04(0), JRC05(0), JRC06(0), JRC07(0), JRC08(0), 
+JRC09(0), JRC10(0), JRC11(0), JRC12(0), JRC13(0), JRC14(0), JRC15(0), JRC16(0), JRC17(0), 
+JRC18(0), JRC19(0), JRC20(0), JRC21(0), JRC22(0), JRC23(0), JRC24(0), JRC25(0), JRC26(0), 
+JRC27(0), JRC28(TRUE), JRC29(TRUE);
+Array:  JRC30[1001](0); 
+
+JRC27 = maxbarsback + currentbar; 
+if (currentbar = 1) then JRC26 =JRC27 ;
+if  (currentbar >= 1) then begin 
+	If JRC24 <= 0 then JRC24 = 1001; 
+	JRC24 = JRC24 -1; 
+	JRC30[JRC24] = Input1;
+end; 
+if (JRC27  < JRC26 + JRC01) then JRC20 = Input1 else 
+	begin
+JRC03 = @minlist(500,@maxlist(JRC02,Input2)); JRC07 = @minlist(JRC01, @ceiling(JRC03)) ;		
+JRC04 = 0.86 - 0.55 / @squareroot(JRC03); JRC05 = 1 - @expvalue(-@log(4) / JRC03 /2);		
+JRC06 = @maxlist(JRC01+1, @ceiling(2*JRC03)); JRC11 = @minlist (JRC27 - JRC26 + 1 , JRC06 ) ;	
+JRC12 = JRC11 * (JRC11+1) * (JRC11-1) / 12 ; JRC13 = (JRC11+1) / 2 ; JRC14 = (JRC11-1) / 2 ;
+JRC09 = 0 ; JRC10 = 0 ; 
+for JRC15 = JRC11-1 downto 0 begin 
+	JRC23 = @mod(JRC24+JRC15,1001) ;
+	JRC09 = JRC09 + JRC30[JRC23] ; 
+	JRC10 = JRC10 + JRC30[JRC23]*(JRC14 - JRC15) ; 
+	end ;
+JRC16 = JRC10/JRC12 ; JRC17 = JRC09/JRC11 - JRC16*JRC13 ; JRC18 = 0 ;
+for JRC15 = JRC11-1 downto 0 begin 
+	JRC17=JRC17+JRC16 ; 
+	JRC23 = @mod(JRC24+JRC15,1001) ;
+	JRC18 = JRC18 + @absvalue(JRC30[JRC23] - JRC17 ) ; 
+end ; 
+	JRC25 = 1.2 * JRC18 / JRC11 ;
+if  JRC11 < JRC06 then JRC25 = JRC25 * power( JRC06 / JRC11, 0.25 ) ; 
+if JRC28 then begin
+JRC28 = FALSE ; JRC19 = JRC25 ; 
+end 
+else JRC19 = JRC19 + (JRC25 - JRC19 ) * JRC05 ; 
+JRC19 = @maxlist ( JRC02 , JRC19 ) ; 
+if JRC29 then begin JRC29 = FALSE ; 
+JRC08 = ( JRC30[JRC24] - JRC30[@mod(JRC24+JRC07,1001)] ) / JRC07;	
+end;
+JRC21 = Input1 - ( JRC20 + JRC08 * JRC04 ) ; JRC22 = 1 - @expvalue ( -@absvalue ( JRC21 ) / JRC19 / JRC03 ) ;
+JRC08 = JRC22 * JRC21 + JRC08 * JRC04 ; JRC20 = JRC20 + JRC08 ; 
+end; 	             
+JR_VEL_sclr_aux3 = JRC20;
