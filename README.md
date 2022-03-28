@@ -10,11 +10,11 @@
 <img src="https://raw.githubusercontent.com/Ragve-hub/scribble/gh-pages/images/str3-1024x361.jpg" alt="3">
 <img src="https://raw.githubusercontent.com/Ragve-hub/scribble/gh-pages/images/str4-1024x398.jpg" alt="4">
 
-или такой вариант :
+Одна из стратегий :
 
 ## Фьючерс РТС, таймфрейм 30 мин
 
-<img src="https://raw.githubusercontent.com/Ragve-hub/scribble/gh-pages/images/fonarik_backtest.jpg" alt="Фундаментальный анализ">
+<img src="https://raw.githubusercontent.com/Ragve-hub/scribble/gh-pages/images/fonarik_backtest.jpg" alt="">
 
 pf 2, max DD -5,4%, net 95333, time in market 1,18,
 Win 44% avg 290, avg W/L 2,45
