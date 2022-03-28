@@ -1,0 +1,33 @@
+[LegacyColorValue = TRUE];
+
+{ *******************************************************************
+
+	Function:   J.FastK.2k
+
+   Analogous to Omega Research FastK stochastic, except
+   price data is presmoothed using Jurik Research's JMA filter.
+
+   Length = length of data window
+   Smooth = amount of JMA smoothness applied to H,L,C values
+
+   Notes: Requires Jurik's JMA to be already installed.
+          JMA is a commercial product, requiring a valid user license.
+		  For details, see www.jurikres.com
+
+	Copyright 2001 Jurik Research         
+
+********************************************************************}
+
+inputs : Length(NumericSimple), Smooth(NumericSimple);
+
+Value1 = Lowest (JR.JMA.2k.fr(Low, Smooth, 0),Length);
+Value2 = Highest(JR.JMA.2k.fr(High, Smooth, 0),Length) - Value1 ;
+Value3 = JR.JMA.2k.fr(Close, Smooth, 0) - value1 ;
+
+if Value2 > 0 then
+	J.FastK.2k = 100 * Value3 / Value2
+else
+	J.FastK.2k = 50; {if denominator is zero, assume midpoint}
+
+
+
