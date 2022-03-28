@@ -1,6 +1,6 @@
 # Multicharts/Easylanguage-code
 
-## Правила торговых стратегий и статьи в Markdown на языке EasyLanguage(Multicharts).
+## Правила торговых стратегий, статьи в Markdown, код на языке EasyLanguage(Multicharts).
 
 
 Для примера перфоманс торговых стратегии:
