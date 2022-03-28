@@ -1,0 +1,36 @@
+[LegacyColorValue = TRUE];
+
+{ *******************************************************************
+
+	Function	: JR.DMXPlus   (type series)
+
+	Author	: © 2002 Jurik Research   ;   www.jurikres.com
+
+	Notes		: classic DMI+  modified to include JMA smoothing
+
+  ********************************************************************} 
+
+inputs : LENGTH (NumericSimple) ;
+vars   : upward(0), numer(0), denom(0);
+
+value1 = H - H[1] ;
+value2 = L[1] - L ;
+
+if value1 > value2 AND value1 > 0
+	then upward = value1 
+	else upward = 0;
+
+{Numer = JR.JMA.flex.2k( upward, LENGTH, -100 );
+Denom = JR.JMA.flex.2k( TrueRange , LENGTH,-100 ) ;}
+numer = JR.JMA.2k.fr( upward, LENGTH, -100 );
+denom = JR.JMA.2k.fr( TrueRange , LENGTH,-100);
+
+if (denom > 0.00001) AND (currentbar > 40)
+	then JR.DMXplus.2k = 100 * numer / denom
+	else JR.DMXplus.2k = 0 ;
+
+{ this dummy code forces type series compilation }
+value99 = value99[2];
+
+
+
