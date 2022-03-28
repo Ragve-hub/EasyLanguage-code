@@ -1,0 +1,84 @@
+[LegacyColorValue = TRUE];
+
+{JR.AMA.scalar 14/12/2006}
+	
+Inputs: price(numericSeries), speed(numeric);
+
+Vars: JR01(30), JR02(0.0001), JR03(0), JR04(0), JR05(0), JR06(0), JR07(0), JR08(0), JR09(0), JR10(0), JR11(0), 
+JR12(0), JR13(0), JR14(0), JR15(0), JR16(0), JR17(0), JR18(0), JR19(0), JR20(0), JR21(0), JR22(0), JR23(0), 
+JR24(0), JR25(0), JR26(0), JR27(0), JR28(TRUE), JR29(0); 
+Array:  JR30[1001](0);	
+JR27 = maxbarsback + currentbar ;
+JR03 = minlist(500,maxlist(JR02,speed)); 
+JR04 = 0.86 - 0.55 / squareroot(JR03); 
+JR05 = 1 - expvalue(-log(4) / JR03 /2);			
+JR06 = maxlist(JR01+1, ceiling(2*JR03)); 
+	if 	(currentbar = 1) then begin 
+  JR09 = 0; 
+  for JR16 = 1 to  JR01 -1 begin
+if price [JR16 ] = price [JR16 +1] then begin 
+	JR09 = JR09 + 1; 
+end; 
+end; 
+
+JR26 = iff ( JR09 < ( JR01-1) , JR27 - JR01 , JR27 ) ;
+JR11 = minlist (JR27 - JR26 + 1 , JR06 ) ; 
+for JR15 = JR11-1 downto 1 begin 
+	if JR24 <= 0 then JR24 = 1001; 
+	JR24 = JR24 -1;
+JR30[JR24] = price[JR15]; 
+end; 
+	end; 
+If JR24 <= 0 then 
+	JR24 = 1001; 
+	JR24 = JR24 -1; JR30[JR24] = price;
+	JR11 = minlist (JR27 - JR26 + 1 , JR06 ) ; 
+	
+if currentbar = 1 then if JR11 < JR01 then begin 
+	JR20 = price ; 
+	JR08 = 0 ;
+end 
+else begin 
+	JR20 = price[1] ; 
+	JR07 = maxlist ( 1 , minlist(JR01, ceiling(JR03)) ) ;
+JR08 = (price[0] - price[JR07]) / JR07; 
+end ; 
+if JR11 <= JR01 then begin 
+	JR29 = JR20; 
+	JR20 = squareroot(JR05)*price + (1-squareroot(JR05))*JR20;
+JR08 = JR20 - JR29 ; 
+end 
+else 
+	begin 
+		JR12 = JR11 * (JR11+1) * (JR11-1) / 12 ; 
+		JR13 = (JR11+1) / 2 ; JR14 = (JR11-1) / 2 ;
+		JR09 = 0 ; 
+		JR10 = 0 ; 
+		for JR15 = JR11-1 downto 0	begin 
+			JR23 = mod(JR24+JR15,1001) ; 
+			JR09 = JR09 + JR30[JR23] ;
+			JR10 = JR10 + JR30[JR23]*(JR14 - JR15) ; 
+		end ; 
+		
+	JR16 = JR10/JR12 ; 
+	JR17 = JR09/JR11 - JR16*JR13 ; JR18 = 0 ;
+	for JR15 = JR11-1 downto 0 	begin 
+		JR17=JR17+JR16 ; 
+		JR23 = mod(JR24+JR15,1001) ; 
+		JR18 = JR18 + absvalue(JR30[JR23] - JR17 ) ;
+	end ; 
+		JR25 = 1.4 * JR18 / JR11 ; 
+		if  JR11 < JR06 then JR25 = JR25 * power( JR06 / JR11, 0.25 ) ; 
+		if 	JR28 then begin
+			JR28 = FALSE ; 
+			JR19 = JR25 ; 
+		end 
+		else	
+		JR19 = JR19 + (JR25 - JR19 ) * JR05 ; 
+		JR19 = maxlist ( JR02 , JR19 ) ;
+		JR21 = price[0] - ( JR20 + JR08 * JR04 ) ; 
+		JR22 = 1 - expvalue ( -absvalue ( JR21 ) / JR19 / JR03 ) ;
+		JR08 = JR22 * JR21 + JR08 * JR04 ; JR20 = JR20 + JR08 ; 
+		end; 
+JR.AMA_.scalar =  JR20  ; 
+
