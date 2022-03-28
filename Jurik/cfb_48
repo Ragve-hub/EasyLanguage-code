@@ -1,0 +1,38 @@
+[LegacyColorValue = TRUE];
+
+{JRC_Fractal48}
+inputs:	Series(numericseries),Smooth(numericsimple);		
+vars: 	ER1(0), ER2(0), ER3(0), ER4(0), ER5(0), ER6(0), ER7(0), ER8(0), ER9(0), ER10(0), ER24(0),
+	ER15 (1), ER16(1), ER17(0), ER18(0), ER19(20) , ER20(0) , ER21(0) , ER29(ceiling(Smooth)) ;
+Array:	ER22[10](0) , ER23[10](0) ;
+ER1 = JR_CFB_auxiliary ( Series , 2  ) ; ER2 = JR_CFB_auxiliary ( Series , 3  ) ;	
+ER3 = JR_CFB_auxiliary ( Series , 4  ) ; ER4 = JR_CFB_auxiliary ( Series , 6  ) ;
+ER5 = JR_CFB_auxiliary ( Series , 8  ) ; ER6 = JR_CFB_auxiliary ( Series , 12  ) ;	
+ER7 = JR_CFB_auxiliary ( Series , 16  ) ; ER8 = JR_CFB_auxiliary ( Series , 24  ) ;
+ER9 = JR_CFB_auxiliary ( Series , 32  ) ; ER10 = JR_CFB_auxiliary ( Series , 48 ) ;
+if currentbar <= ER29 then begin for ER21 = 1 to 10 begin ER23[ER21] = 0 ; end;
+for ER20 = 0 to currentbar-1 begin
+ER23[1] = ER23[1] + ER1[ER20] ; ER23[2] = ER23[2] + ER2[ER20] ;
+ER23[3] = ER23[3] + ER3[ER20] ; ER23[4] = ER23[4] + ER4[ER20] ;
+ER23[5] = ER23[5] + ER5[ER20] ; ER23[6] = ER23[6] + ER6[ER20] ;
+ER23[7] = ER23[7] + ER7[ER20] ; ER23[8] = ER23[8] + ER8[ER20] ;
+ER23[9] = ER23[9] + ER9[ER20] ; ER23[10] = ER23[10] + ER10[ER20] ;
+end; for ER21 = 1 to 10 begin ER23[ER21] = ER23[ER21] / currentbar ; end; end else begin
+ER23[1] = ER23[1] + ( ER1 - ER1[ER29] ) / ER29 ; ER23[2] = ER23[2] + ( ER2 - ER2[ER29] ) / ER29 ;
+ER23[3] = ER23[3] + ( ER3 - ER3[ER29] ) / ER29 ; ER23[4] = ER23[4] + ( ER4 - ER4[ER29] ) / ER29 ;
+ER23[5] = ER23[5] + ( ER5 - ER5[ER29] ) / ER29 ; ER23[6] = ER23[6] + ( ER6 - ER6[ER29] ) / ER29 ;
+ER23[7] = ER23[7] + ( ER7 - ER7[ER29] ) / ER29 ; ER23[8] = ER23[8] + ( ER8 - ER8[ER29] ) / ER29 ;
+ER23[9] = ER23[9] + ( ER9 - ER9[ER29] ) / ER29 ; ER23[10] = ER23[10] + ( ER10 - ER10[ER29] ) / ER29 ;
+end; if currentbar > 5 then begin ER15 = 1; ER22[10] = ER15  * ER23[10];
+ER15 = ER15 * ( 1 - ER22[10]) ; ER22[8] = ER15  * ER23[8]; ER15 = ER15 * ( 1 - ER22[8]) ;		
+ER22[6] = ER15  * ER23[6]; ER15 = ER15 * ( 1 - ER22[6]) ; ER22[4] = ER15  * ER23[4];
+ER15 = ER15 * ( 1 - ER22[4]) ; ER22[2] = ER15  * ER23[2]; ER16 = 1; ER22[9] = ER16  * ER23[9];
+ER16 = ER16 * ( 1 - ER22[9]) ; ER22[7] = ER16  * ER23[7]; ER16 = ER16 * ( 1 - ER22[7]) ;		
+ER22[5] = ER16  * ER23[5]; ER16 = ER16 * ( 1 - ER22[5]) ; ER22[3] = ER16  * ER23[3];
+ER16 = ER16 * ( 1 - ER22[3]) ; ER22[1] = ER16  * ER23[1];
+ER17 =   ER22[1]*ER22[1]*2 + ER22[3]*ER22[3]*4 + ER22[5]*ER22[5]*8  + ER22[7]*ER22[7]*16 + ER22[9]*ER22[9]*32 + 
+ER22[2]*ER22[2]*3 + ER22[4]*ER22[4]*6 + ER22[6]*ER22[6]*12 + ER22[8]*ER22[8]*24 + ER22[10]*ER22[10]*48  ;
+ER18 =   ER22[1]*ER22[1] + ER22[3]*ER22[3] + ER22[5]*ER22[5]  + ER22[7]*ER22[7] + ER22[9]*ER22[9] +
+ER22[2]*ER22[2] + ER22[4]*ER22[4] + ER22[6]*ER22[6] + ER22[8]*ER22[8] + ER22[10]*ER22[10]  ;
+ER19 = iff ( ER18 = 0 , 0 , ER17 / ER18 ) ; end; 
+JR_Fractal48  = ER19;
