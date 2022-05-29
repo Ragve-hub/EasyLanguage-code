@@ -20,3 +20,7 @@ pf 2, max DD -5,4%, net 95333, time in market 1,18,
 Win 44% avg 290, avg W/L 2,45
 
 * функции Jurik Indicators
+
+* древний QuikAtServer. Связка квика с Omega Research и Multicharts-ом.  
+
+* Lua скрипты вывод даты в текстовые файлы.

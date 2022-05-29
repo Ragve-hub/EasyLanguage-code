@@ -1,0 +1,427 @@
+﻿Кофигурирование системы с помощью  модуля конфигурирования "ATQuikConfig.exe"
+После запуска конфигурационного модуля появится диалог:
+
+
+На вкладке "Аккаунт" необходимо указать свой номер счета и аккаунта.
+
+
+На вкладке "Пути" необходимо указать путь терминалу QUIK и задать имя файла лога транзакций.
+
+
+На вкладке "Инструменты" с помощью правой кнопки мыши можно добавлять, редактировать и удалять инструменты.
+
+
+В поле "Инструмент" пишем название интрумента, которое будем использовать в клиентах.
+В поле "Класс" пишем класс иструмента, как в системе QUIK.
+В поле "Тикер" пишем назване иструмента, как в системе QUIK.
+В поле "Точность цены" задаем число значащих цифр после запятой для задания лимитовой цены заявки.
+
+Ну и в конце, когда все настроено, наживаем кнопочку "Сохранить и выйти". Все! система готова к работе.
+
+Модуль ручной торговли "QuikTransactionClient.exe"
+Модуль "QuikTransactionClient.exe":
+
+
+После запуска приложения мы увидим список наших инструментов, которые мы добавили в конфигурационном модуле, с текущими маркетпозициями по ним.
+
+По клику правой кнопкой мыши можно задать актуальную маркетпозицию по выбранному инструменту:
+
+
+Кнопка "Загрузить словарь символов" служит для обновления списка инструментов, в случае, если Вы их изменили с помощью конфигурационного модуля "ATQuikConfig.exe".
+
+Кнопка "Отменить посланные ордера" служит для отмены всех посланных из ЭТОГО клиента лимитовых заявок.
+
+Если выбрана опция "Посылать рыночную заявку", то не зависимо от лимитовой цены в терминал "QUIK" будет отправляться по кнопкам "Купить/Продать" РЫНОЧНАЯ заявка. В противном случае будет отправляться ЛИМИТИРОВАННАЯ заявка, с ценой, указанной в поле "Лимитовая цена".
+
+Количество лотов указывается в поле "Количество лотов".
+
+Функции доступные, начиная с версии QuikATServer 2.1:
+Модуль "ATOrderManager.exe":
+
+По функциональности подобен QuikTransactionClient.exe, но дополнительно показывает статусы по ордерам. 
+Использование модуля "ELQuikATClient.dll" для автоматической торговли из программ технического анализа.
+Автоматическая торговля возможна из любой системы технического анализа, где в скриптах индикаторов и сигналов поддерживается импорт функций из пользовательских DLL.
+
+
+Описание API для автоматической торговли ELQuikATClient.dll:
+
+- int __stdcall ConnectToQUIK (LPSTR lpszSymbol)  - подписасться для торговли по выбранному символу.
+Входные параметры:
+   - lpszSymbol - имя инструмента, по которому будет вестись торговля.
+Результат:
+   - Уникальный ID созданного клиента (будет необходим для вызова остальных функций DLL для торговли по выбранному символу). Если приконектиться к символу не получилось (например, не существует инструмента в портфеле с таким именем), то возвращается значение меньше нуля.
+
+- int __stdcall DisconnectFromQUIK ( int client_id ) - отписаться от торговли по символу.
+Входные параметры:
+  - client_id  - ID, полученный в ходе выполнения функции ConnectToQUIK .
+Результат:
+  >0 - функция выполнилась успешно.
+  <=0 - в ходе выполнения функции возникла ошибка.
+
+- int __stdcall CancelAllSendedOrders( int client_id ) - Отменить все посланные по данному client_id лимитированные заявки.
+Входные параметры:
+  - client_id  - ID, полученный в ходе выполнения функции ConnectToQUIK .
+Результат:
+  >0 - функция выполнилась успешно.
+  <=0 - в ходе выполнения функции возникла ошибка.
+
+- int __stdcall SendBuyLimit( int client_id, double price, int quantity ) - Послать лимитированную заяку на покупку.
+Входные параметры:
+  - client_id  - ID, полученный в ходе выполнения функции ConnectToQUIK.
+  - price - лимитовая цена заяки.
+  - quantity  - количество лотов на покупку.
+Результат:
+>0 - функция выполнилась успешно. Возвращается присвоенный брокером номер заявки.
+  <=0 - в ходе выполнения функции возникла ошибка.
+
+- int __stdcall SendSellLimit( int client_id, double price, int quantity ) - Послать лимитированную заяку на продажу.
+Входные параметры:
+  - client_id  - ID, полученный в ходе выполнения функции ConnectToQUIK.
+  - price - лимитовая цена заяки.
+  - quantity  - количество лотов на продажу.
+Результат:
+  >0 - функция выполнилась успешно. Возвращается присвоенный брокером номер заявки.
+  <=0 - в ходе выполнения функции возникла ошибка.
+
+- int __stdcall SendBuyMarket( int client_id, int quantity ) - Послать рыночную заяку на покупку.
+Входные параметры:
+  - client_id  - ID, полученный в ходе выполнения функции ConnectToQUIK.
+  - quantity  - количество лотов на покупку.
+ - количество лотов на покупку.
+Результат:
+>0 - функция выполнилась успешно. Возвращается присвоенный брокером номер заявки.
+  <=0 - в ходе выполнения функции возникла ошибка.
+
+- int __stdcall SendSellMarket( int client_id, int quantity ) - Послать рыночную заяку на продажу.
+Входные параметры:t_id  - ID, полученный в ходе выполнения функции ConnectToQUIK.
+  - quantity  - количество лотов на продажу.
+Результат:
+  >0 - функция выполнилась успешно. Возвращается присвоенный брокером номер заявки.
+  <= 0 - в ходе выполнения функции возникла ошибка.
+
+- int __stdcall assignMarketPosition (int client_id, int - int __stdcall assignMarketPosition (int client_id, int new_mp) - Задать маркетпозицию по client_id (при этом ни какие заявки не отправляются).
+Входные параметры:
+  - client_id - ID, полученный в ходе выполнения функции ConnectToQUIK.
+  - new_mp - новая маркетпозиция по символу.
+Результат:
+  > 0 - функция выполнилась успешно.
+  <=0 - в ходе выполнения функции возникла ошибка.
+
+- int __stdcall getMarketPosition (int client_id) - Получить текущую маркетпозицию по client_id.
+Входные параметры:
+  - client_id  - ID, полученный в ходе выполнения функции ConnectToQUIK.
+Результат:
+  Текущая маркетпозиция. Если функция провалилась, то возвращается 0.
+
+Функции доступные, начиная с версии QuikATServer 2.0:
+
+- int __stdcall sendRAWTransaction (int client_id, LPSTR lpszTransactionString, LPDOUBLE pOrderID ) - Отправить текстовую транзакцию по client_id.
+Входные параметры:
+  - client_id  - ID, полученный в ходе выполнения функции ConnectToQUIK.
+  - lpszTransactionString  - текст отправляемой транзакции
+  - pOrderID  - id ордера, присвоенный брокером (если транзакция была на отправку ордера)
+Результат:
+  Код ошибки, который вернул терминал Quik или отрицательное значение, если ошибка была вызвана на стороне QuikATServer (например, в параметры функции был передан не существующий client_id).
+
+
+Использование ELQuikATClient.dll для автоматической торговли Quik из TA Omega ProSuite 2000i.
+Для того, чтобы использовать функции автоматической отправки транзакций в систему Quik из TA Omega ProSuite 2000i необходимо на языке EasyLanguage в EasyLanguage PowerEditor обявить функции, экспортируемые из ELQuikATClient.dll.
+Для этого в редакторе создаем и компилируем функции с текстом:
+
+функция ConnectATQuikServer (return type: Numeric):
+DefineDLLFunc: "ELQuikATClient.dll", int, "ConnectToQUIK", lpstr;
+input: symbol_name(string);
+ConnectATQuikServer = ConnectToQUIK(symbol_name);
+
+
+функция QCancellAll (return type: Numeric):
+DefineDLLFunc: "ELQuikATClient.dll", int, "CancelAllSendedOrders", int;
+input: client_id(NumericSimple);
+QCancellAll = CancelAllSendedOrders(client_id);
+
+
+функция QBuyM (return type: Numeric):
+DefineDLLFunc: "ELQuikATClient.dll", int, "SendBuyMarket", int, int;
+input: client_id(NumericSimple), quantity(NumericSimple);
+QBuyM = SendBuyMarket(client_id, quantity);
+
+
+функция QSellM (return type: Numeric):
+DefineDLLFunc: "ELQuikATClient.dll", int, "SendSellMarket", int, int;
+input: client_id(NumericSimple), quantity(NumericSimple);
+QSellM = SendSellMarket(client_id, quantity);
+
+
+функция QGetMP (return type: Numeric):
+DefineDLLFunc: "ELQuikATClient.dll", int, "getMarketPosition", int;
+input: client_id(NumericSimple);
+QGetMP = getMarketPosition(client_id);
+
+Для того, чтобы наши приказы отправлялись в Quik только во время реалтайм-просчета, понадобится функция проверки того, что текущий бар пришел в реалтайме:
+
+функция IsRealtimeBar (return type: TrueFalse):
+var: curdate(0), curtime(0), cond(true);
+if cond then begin
+  curdate = currentdate;
+  curtime = currenttime;
+  cond = false;
+end;
+
+isrealtimebar = false;
+
+if date > curdate then
+  isrealtimebar = true
+else if time >= curtime then
+  isrealtimebar = true;
+
+А так же нам понадобится самый главный скрипт-сигнал для автоматической отправки транзакций в Quik и автоматической синхронизации маркетпозиций в торговой стратегии и той, которая получается в системе QuikATServer.
+
+сигнал ATMarket (на вход принимает имя символа, по которому будем торговать в Quik):
+input: symbol_name("SBERP");
+var: brokerMP(0), client_id(0), start_bar(0), oldMP(0);
+var: alert_message(""), quantity(0);
+var: is_revers_LE(false), is_revers_SE(false), is_entry(false);
+var: cond(true), val(0), curtime(0), curdate(0);
+
+if cond = true then begin
+  cleardebug;
+  client_id = ConnectATQuikServer(symbol_name);
+  print("id=",client_id);
+  cond = false;
+end;
+
+print (currentbar:0:0, " is_realtime=", isrealtimebar);
+
+if (start_bar = 0)AND isrealtimebar then begin
+  start_bar = currentbar-1;
+end;
+
+if client_id > 0 and currentbar > start_bar and isrealtimebar then
+begin
+
+  quantity = (marketposition*CurrentContracts) - oldMP;
+
+  if (quantity <> 0) then begin
+    val = QCancellAll(client_id);
+    if (quantity > 0) then begin
+      Print("Buy=",QBuyM(client_id, quantity));
+    end;
+    if (quantity < 0) then begin
+      Print("Sell=",QSellM(client_id, (-quantity)));
+    end;
+  end;
+
+  oldMP = marketposition*CurrentContracts;
+  brokerMP = QGetMP(client_id);
+  print("BrokerMP=", brokerMP:0:0);
+
+  if (oldMP <> brokerMP) then begin
+
+    is_revers_LE = false;
+    is_revers_SE = false;
+    if (oldMP >= 0)and(brokerMP < 0) then is_revers_SE = true;
+    if (oldMP <= 0)and(brokerMP > 0) then is_revers_LE = true;
+
+
+    if (is_revers_LE = false) and (is_revers_SE = false) then begin
+      if (brokerMP <= 0) and (oldMP < brokerMP) then ExitShort( "RemoteBuyToCover" ) (brokerMP - oldMP) shares total next bar market;
+      if (brokerMP < 0) and (brokerMP < oldMP)then Sell("RemoteSellShort") (oldMP - brokerMP) shares next bar market;
+      if (brokerMP >= 0) and (brokerMP < oldMP) then Exitlong("RemoteSell")(oldMP - brokerMP) shares total next bar market;
+      if (brokerMP > 0) and (oldMP < brokerMP) then Buy("RemoteBuy") (brokerMP - oldMP) shares next bar market;
+    end else begin
+      if (is_revers_LE) then Buy ("RemoteLE") brokerMP shares next bar market;
+      if (is_revers_SE) then Sell ("RemoteSE") -brokerMP shares next bar market;
+    end;
+
+    oldMP = brokerMP;
+  end;
+
+end
+else
+  oldMP = marketposition*CurrentContracts;
+
+
+Для того, чтобы все заработало, остается:
+   1. запустить терминал Quik.
+   2. Добавить сигнал ATMarket к полюбившейся стратегии.
+3. Накинуть стратегию с добавленным сигналом ATMarket на чарт.
+
+
+Использование ELQuikATClient.dll для автоматической торговли Quik из Multicharts.
+Для того, чтобы использовать функции автоматической отправки транзакций в систему Quik из Multicharts необходимо на языке EasyLanguage в PowerLanguage Editor обявить функции, экспортируемые из ELQuikATClient.dll аналогично, как и для Omega ProSuite 2000i.
+Для этого в редакторе создаем и компилируем функции с текстом:
+
+функция ConnectATQuikServer (return type: Numeric):
+DefineDLLFunc: "ELQuikATClient.dll", int, "ConnectToQUIK", lpstr;
+input: symbol_name(string);
+ConnectATQuikServer = ConnectToQUIK(symbol_name);
+
+
+функция QCancellAll (return type: Numeric):
+DefineDLLFunc: "ELQuikATClient.dll", int, "CancelAllSendedOrders", int;
+input: client_id(NumericSimple);
+QCancellAll = CancelAllSendedOrders(client_id);
+
+
+функция QBuyM (return type: Numeric):
+DefineDLLFunc: "ELQuikATClient.dll", int, "SendBuyMarket", int, int;
+input: client_id(NumericSimple), quantity(NumericSimple);
+QBuyM = SendBuyMarket(client_id, quantity);
+
+
+функция QSellM (return type: Numeric):
+DefineDLLFunc: "ELQuikATClient.dll", int, "SendSellMarket", int, int;
+input: client_id(NumericSimple), quantity(NumericSimple);
+QSellM = SendSellMarket(client_id, quantity);
+
+
+функция QGetMP (return type: Numeric):
+DefineDLLFunc: "ELQuikATClient.dll", int, "getMarketPosition", int;
+input: client_id(NumericSimple);
+QGetMP = getMarketPosition(client_id);
+
+А вот самый главный скрипт - сигнал в отличии от Omega будет иметь другой вид, так как язык EasyLangugage в системе Multicharts по сравнению с Omega шагнул вперед.
+
+сигнал ATMarket (на вход принимает имя символа, по которому будем торговать в Quik):
+[intrabarordergeneration = true]
+input: symbol_name("SBERP");
+var: intrabarpersist brokerMP(0), client_id(0), start_bar(0), intrabarpersist oldMP(0);
+var: quantity(0);
+var: is_revers_LE(false), is_revers_SE(false), is_entry(false);
+var: cond(true), val(0), curtime(0), curdate(0);
+
+once begin
+  cleardebug;
+  client_id = ConnectATQuikServer(symbol_name);
+  print("id=",client_id);
+end;
+
+if (start_bar = 0)AND LastBarOnChart_s then begin
+  start_bar = currentbar-1;
+end;
+
+if client_id > 0 and getappinfo(airealtimecalc) = 1 and currentbar > start_bar then
+begin
+
+  quantity = (marketposition*currentshares) - oldMP;
+
+  if (quantity <> 0) then begin
+    QCancellAll(client_id);
+    if (quantity > 0) then begin
+      Print("Buy=",QBuyM(client_id, quantity));
+    end;
+    if (quantity < 0) then begin
+      Print("Sell=",QSellM(client_id, (-quantity)));
+    end;
+  end;
+
+  oldMP = marketposition*currentshares;
+  brokerMP = QGetMP(client_id);
+  print("BrokerMP=", brokerMP:0:0);
+
+  if (oldMP <> brokerMP) then begin
+
+    is_revers_LE = false;
+    is_revers_SE = false;
+    if (oldMP >= 0)and(brokerMP < 0) then is_revers_SE = true;
+    if (oldMP <= 0)and(brokerMP > 0) then is_revers_LE = true;
+
+
+    if (is_revers_LE = false) and (is_revers_SE = false) then begin
+      if (brokerMP <= 0) and (oldMP < brokerMP) then buytocover( "RemoteBuyToCover" ) (brokerMP - oldMP) shares total next bar market;
+      if (brokerMP < 0) and (brokerMP < oldMP)then sellshort("RemoteSellShort") (oldMP - brokerMP) shares next bar market;
+      if (brokerMP >= 0) and (brokerMP < oldMP) then sell ("RemoteSell")(oldMP - brokerMP) shares total next bar market;
+      if (brokerMP > 0) and (oldMP < brokerMP) then buy ("RemoteBuy") (brokerMP - oldMP) shares next bar market;
+    end else begin
+      if (is_revers_LE) then buy ("RemoteLE") brokerMP shares next bar market;
+      if (is_revers_SE) then sellshort ("RemoteSE") -brokerMP shares next bar market;
+    end;
+
+    oldMP = brokerMP;
+  end;
+
+end
+else
+  oldMP = marketposition*currentshares;
+
+
+Для того, чтобы все заработало, остается:
+   1. запустить терминал Quik.
+   2. Накинуть сигнал ATMarket вместе с сигналами торговой стратегии на чарт. 
+COM-API для автоматической торговли через "QuikATServer"
+Автоматическая торговля с использованием COM-API возможна из систем технического анализа, где из скриптов поддерживается использование COM-OLE объектов.
+
+Перед запуском скрипта автоматической торговли из программы технического анализа необходимо запустить терминал Quik.
+
+
+Описание COM-API для автоматической торговли через "QuikATServer.exe":
+
+Для отправки транзакций в Quik необходимо использовать COM-объект "QuikATServer.ATQuikClient"
+При создании экземпляра объекта "QuikATServer.ATQuikClient" автоматически создается клиент для QuikATServer и происходит подключение к терминалу Quik. Подключиться к серверу в любое время можно так-же с помощью метода Connect().
+При разрушении объекта "QuikATServer.ATQuikClient" произойдет автоматическое отключение клиента от сервера. Отключиться от сервера в любое время можно с помощью метода Disconnect().
+
+- IsQuikConnected([out,retval] VARIANT_BOOL* p_is_connected)  - проверить, есть ли связь с Quik.
+Результат:
+возвращаетвя в out-параметре p_is_connected    - VARIANT_TRUE - связь с Quik есть
+   - VARIANT_FALSE - связи с Quik нет.
+
+- SendOrderSync([in]BSTR Symbol
+, [in]LONG BuySell
+, [in]LONG PriceType
+, [in]DOUBLE Price
+, [in]LONG Quantity
+, [out,retval]LONG* pOrderID) - отправить в Quik синхронную транзакцию на покупку/продажу.
+Входные параметры:
+  -BuySell
+  1 - для покупки
+  -1 - для продажи
+  -PriceType
+  0 - для лимитированной заявки
+  1 - для рыночной (маркетовой) заявки
+  -Price
+  должно быть 0.0 - для рыночной заявки
+  или желаемая цена лимитированной заявки
+  -Quantity
+  чило лотов для покупки/продажи
+Результат:
+возвращаетвя в out-параметре pOrderID - номер заявки, присвоенный терминалом Quik.
+
+- CancelAllSendedOrdersSync()  - отменить все посланные из ЭТОГО клиента лимитированные заявки.
+
+- AssignMarketPosition([in]BSTR Symbol, [in]LONG NewMarketPosition) - сообщить QuikATServer-у маркетпозицию по символу (при этом ни каких транзакций на Quik не отправляется).
+Входные параметры:
+  -Symbol - имя символа (определенное в словаре инструментов через конфигурационный модуль), для которого задаем маркетпозицию.
+  -NewMarketPosition - желаемая маркетпозиция по символу
+
+- GetMarketPosition([in]BSTR Symbol, [out, retval]LONG* pMarketPosition) - узнать у QuikATServer-а внутреннюю маркетпозицию(не брокерскую) по символу.
+Входные параметры:
+  -Symbol - имя символа (определенное в словаре инструментов через конфигурационный модуль), для которого хотим узнать маркетпозицию.
+Результат:
+возвращаетвя в out-параметре pMarketPosition - текущая внутренняя маркетпозиция по символу.
+
+
+
+Функции доступные, начиная с версии QuikATServer 2.0:
+
+- SendRAWTransaction([in] BSTR TransactionStr, [out] long* _nResult, [out] long* _nOrderNum) - отправить в Quik текстовую транзакцию.
+Входные параметры:
+  -TransactionStr - текст отправляемой транзакции.
+Результат:
+  -_nResult - результат транзакции.
+  -_nOrderNum - присвоенный брокером уникальный номер ордера.
+
+	  
+ Загрузки
+
+"QuikATServer 1.0"
+
+"QuikATServer 2.1"
+
+Скачать скрипт автоторговли Quik+Omega2000i
+
+Скачать скрипт автоторговли Quik+Multicharts
+
+Скачать исходники QuikATServer 2.1.408
+
+
+
