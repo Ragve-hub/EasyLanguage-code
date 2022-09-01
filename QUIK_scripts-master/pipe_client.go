@@ -4,10 +4,11 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"log"
 	"net"
-	"time"
-
+	"os"
 	"strings"
+	"time"
 
 	"gopkg.in/natefinch/npipe.v2"
 )
@@ -21,8 +22,19 @@ func main() {
 	//	Ref1 := 10.2
 	//	SRef1 := 1000
 
-	//
+	// logging
 
+	file, err := os.OpenFile("trades.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	log.SetOutput(file)
+
+	
+
+
+// Pipe
 	ln, err := npipe.Listen(`\\.\pipe\some_pipe`)
 	if err != nil {
 		// handle error
@@ -65,16 +77,21 @@ func main() {
 				fmt.Println("bid-ask:", ask, ask_v, bid, bid_v)
 			*/
 
+			//Strategy
 			if Position == false && time.Now().Second() == 25 {
 
 				fmt.Println(datetime + ";" + "Buy" + ";" + price + ";")
 				Position = true
+
+				log.Println("Buy " + price)
 			}
 
 			if Position == true && time.Now().Second() == 45 {
 
 				fmt.Println(datetime + ";" + "Cover" + ";" + price + ";")
 				Position = false
+
+				log.Println("Cover " + price)
 			}
 
 		}(conn)
