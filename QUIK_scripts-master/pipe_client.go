@@ -7,6 +7,7 @@ import (
 	"log"
 	"net"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -31,19 +32,16 @@ func main() {
 
 	log.SetOutput(file)
 
-	
-
-
-// Pipe
+	// Pipe
 	ln, err := npipe.Listen(`\\.\pipe\some_pipe`)
 	if err != nil {
-		// handle error
+		fmt.Println(err)
 	}
 
 	for {
 		conn, err := ln.Accept()
 		if err != nil {
-			// handle error
+			fmt.Println(err)
 			continue
 		}
 
@@ -53,45 +51,87 @@ func main() {
 			r := bufio.NewReader(conn)
 			msg, err := r.ReadString('\n')
 			if err != nil {
-				// handle error
+				fmt.Println(err)
 				return
 			}
 
 			s := strings.Split(msg, ";")
 			//fmt.Println(s)
 
-			// tick
-			datetime := time.Now().Format("20060802 15:04:05.999")
-			// volume := s[2]
-			price := s[3]
+			//Parsing Tick
+			//**************************************
 
-			//	fmt.Println("tick: ", datetime, price, volume)
-
-			/*	bid-ask
-				ask := s[4]
-				ask_v := s[5]
-				bid := s[6]
-				bid_v := s[7]
-
-				//bid-ask
-				fmt.Println("bid-ask:", ask, ask_v, bid, bid_v)
-			*/
-
-			//Strategy
-			if Position == false && time.Now().Second() == 25 {
-
-				fmt.Println(datetime + ";" + "Buy" + ";" + price + ";")
-				Position = true
-
-				log.Println("Buy " + price)
+			dates, err := time.Parse("20060102", s[0])
+			if err != nil {
+				fmt.Println(err)
+				return
 			}
 
-			if Position == true && time.Now().Second() == 45 {
+			times, err := time.Parse("150405", s[1])
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
 
-				fmt.Println(datetime + ";" + "Cover" + ";" + price + ";")
+			price, err := strconv.ParseFloat(s[3], 32)
+			if err != nil {
+				panic(err)
+			}
+
+			volume, err := strconv.ParseFloat(s[2], 32)
+			if err != nil {
+				panic(err)
+			}
+			//Parsing Bid/Ask
+			//**************************************
+
+			ask_v, err := strconv.ParseFloat(s[5], 32)
+			if err != nil {
+				panic(err)
+			}
+
+			bid_v, err := strconv.ParseFloat(s[7], 32)
+			if err != nil {
+				panic(err)
+			}
+
+			ask, err := strconv.ParseFloat(s[4], 32)
+			if err != nil {
+				panic(err)
+			}
+
+			bid, err := strconv.ParseFloat(s[6], 32)
+			if err != nil {
+				panic(err)
+			}
+			// Print*******************************************
+
+			fmt.Println("**bid-ask**")
+			fmt.Println("ask:", ask, ask_v)
+			fmt.Println("bid:", bid, bid_v)
+
+			fmt.Println("**tick**")
+			fmt.Println("date:", dates)
+			fmt.Println("time:", times)
+			fmt.Println("price:", price)
+			fmt.Println("volume:", volume)
+			fmt.Println("position:", Position)
+
+			//Strategy*****************************************
+			if Position == false && times.Second() == 25 {
+
+				fmt.Println(dates, ";"+"Buy"+";", price, ";")
+				Position = true
+
+				log.Println("Buy ", float32(price))
+			}
+
+			if Position == true && times.Second() == 45 {
+
+				fmt.Println(dates, ";"+"Cover"+";", price, ";")
 				Position = false
 
-				log.Println("Cover " + price)
+				log.Println("Cover ", price)
 			}
 
 		}(conn)
